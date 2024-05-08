@@ -62,10 +62,10 @@ void Board::init_board()
 			 || (i > 600 - rh->big_border_width / 2 && i < 600 + rh->big_border_width / 2)
 			 || (j > 300 - rh->big_border_width / 2 && j < 300 + rh->big_border_width / 2)
 			 || (j > 600 - rh->big_border_width / 2 && j < 600 + rh->big_border_width / 2))
-				board_img.setPixel(i, j, sf::Color(0x000000ff));
+				board_img.setPixel(i, j, sf::Color(0xFF5733ff));
 			else if (i % 100 == 0 || j % 100 == 0)
 			{
-				board_img.setPixel(i, j, sf::Color(0xC2C5CCFF));
+				board_img.setPixel(i, j, sf::Color(0xCFF5733ff));
 			}
 			else board_img.setPixel(i, j, sf::Color(0xFFFFFFFF));
 		}
@@ -305,7 +305,6 @@ void Board::remove_numbers()
 //Returns a queue of coordinates for removing numbers from full sudoku
 std::queue<std::pair<int, int>> Board::get_cord_queue()
 {
-	//Fyller alle koordinater i køen.
 	std::deque<std::pair<int, int>> queue;
 	for (int i = 0; i < grid.size(); i++)
 	{
@@ -378,19 +377,27 @@ bool Board::handle_click(sf::RenderWindow& window, sf::Vector2i pos)
 		clicked_square->setFillColor(rh->clear_color);
 		clicked_square = nullptr;
 	}
-	for(int i = 0; i < squares.size(); i++)
-		for(int j = 0; j < squares[i].size(); j++)
+
+	for (int i = 0; i < squares.size(); i++)
+	{
+		for (int j = 0; j < squares[i].size(); j++)
 		{
 			if (squares[i][j].getGlobalBounds().contains(pos.x, pos.y))
 			{
 				clicked_square = &squares[i][j];
 				clicked_square->setFillColor(rh->chosen_square_color);
 
-				//std::cout << "CLicked square: " << clicked_square->correct_number << " Locked: " << clicked_square->locked << " " << i << " " << j << std::endl;
+				// Temporary color change
+				sf::Color originalColor = clicked_square->getFillColor();
+				clicked_square->setFillColor(sf::Color::Blue);
+				std::this_thread::sleep_for(std::chrono::milliseconds(200)); // Adjust the duration as needed
+				clicked_square->setFillColor(originalColor);
 
 				return true;
 			}
 		}
+	}
+
 	for (int i = 0; i < rh->buttons.size(); i++)
 	{
 		if (rh->buttons[i].getGlobalBounds().contains(pos.x, pos.y))

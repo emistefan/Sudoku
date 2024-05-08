@@ -1,46 +1,54 @@
 #include <SFML/Graphics.hpp>
-#include <Windows.h>
+#include <Windows.h> // Necessary for ShowWindow() and GetConsoleWindow()
 #include "Screen_1.h"
-#include <ctime>
+#include <ctime> // For time function
 #include "ResourceHolder.h"
-
-
-/*
-TODO:
-
-Legg til vanskelighetsgradering av oppgaver og la bruker velge grad selv.
-
-Sjekk hvor mange løsninger sudokuen har ved manual entry.
-
-Legg til "vinnerskjerm" ved komplett utfylt sudoku.
-
-*/
-
 
 int main()
 {
-	ShowWindow(GetConsoleWindow(), SW_HIDE);
+    // Hide the console window
+    ShowWindow(GetConsoleWindow(), SW_HIDE);
 
-	ResourceHolder* rh = new ResourceHolder();
-	sf::RenderWindow window(sf::VideoMode(1600, 1200), "Sudoku");
-	window.setIcon(rh->icon.getSize().x, rh->icon.getSize().y, rh->icon.getPixelsPtr());
+    // Create a ResourceHolder instance
+    ResourceHolder* rh = new ResourceHolder();
 
-	std::vector<cScreen*> Screens;
-	int screen = 0;
+    // Create SFML RenderWindow
+    sf::RenderWindow window(sf::VideoMode(1600, 1200), "Sudoku");
+    window.setIcon(rh->icon.getSize().x, rh->icon.getSize().y, rh->icon.getPixelsPtr());
 
-	cScreen* s0 = new Screen_1(rh, window);
-	Screens.push_back(s0);
-	while (screen <= 0)
-	{
-		screen = Screens[screen]->Run(window);
-		if (screen == 0) break;
-		if (screen == 2)
-		{
-			delete Screens[0];
-			cScreen* s0 = new Screen_1(rh, window);
-			Screens.push_back(s0);
-			screen = 0;
-		}
-	}
-	return 0;
+    // Vector to store different screens
+    std::vector<cScreen*> Screens;
+
+    // Initialize screen index
+    int screen = 0;
+
+    // Create the first screen instance and add it to the vector
+    cScreen* s0 = new Screen_1(rh, window);
+    Screens.push_back(s0);
+
+    // Main loop for running the screens
+    while (screen <= 0)
+    {
+        // Run the current screen and get the next screen index
+        screen = Screens[screen]->Run(window);
+
+        // Break out of the loop if the next screen index is 0
+        if (screen == 0) break;
+
+        // If the next screen index is 2, restart the game
+        if (screen == 2)
+        {
+            // Delete the previous screen instance
+            delete Screens[0];
+
+            // Create a new instance of Screen_1 and add it to the vector
+            cScreen* s0 = new Screen_1(rh, window);
+            Screens.push_back(s0);
+
+            // Reset the screen index
+            screen = 0;
+        }
+    }
+
+    return 0;
 }
